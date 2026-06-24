@@ -1,0 +1,11 @@
+{
+  "name": "aws_saa_c03",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "remoteUser": "root",
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": []
+    }
+  }
+}
