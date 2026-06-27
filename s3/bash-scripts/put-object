@@ -36,10 +36,10 @@ done
 
 echo "Done! Generated $NUM_FILES files in $OUTPUT_DIR"
 
+tree "$OUTPUT_DIR"
+
 # Upload the final generated file to the specified S3 bucket.
-aws s3api put-object \
-    --bucket "$bucket" \
-    --key "dumps/file_${NUM_FILES}.txt" \
-    --body "/tmp/random-files/file_${NUM_FILES}.txt"
+aws s3 sync /tmp/random-files "s3://$bucket/dumps/"
+
 
 
