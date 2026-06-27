@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+
+#using cli to sort
+aws s3api list-buckets \
+    --query 'reverse(sort_by(Buckets,&CreationDate))[0].Name' \
+    --output text

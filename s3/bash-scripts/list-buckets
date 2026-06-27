@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+
+#using cli to sort
+aws s3api list-buckets \
+    --query 'reverse(sort_by(Buckets,&CreationDate))[:3].Name' \
+    --output text
+
+
+#using jq to sort and give top 3
+aws s3api list-buckets | \
+    jq -r '.Buckets | sort_by(.CreationDate) | reverse | .[0:3] | .[] | .Name'
+
+
+echo ...
