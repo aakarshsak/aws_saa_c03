@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+if [ $# -lt 1 ]; then
+    echo "Error : No input"
+    exit 1
+fi
+
+bucket="$1"
+region=${2:-"us-east-1"}
+
+
+# https://docs.aws.amazon.com/cli/latest/reference/s3api/create-bucket.html
+# If you created a new name in some reason and quickly deleted it and then trying in another reason it will through an error : An error occurred (OperationAborted) when calling the CreateBucket operation: A conflicting conditional operation is currently in progress against this resource. Please try again.
+if [[ "$region" == "us-east-1" ]]; then
+    aws s3api create-bucket \
+        --bucket "$bucket" \
+        --region "$region" \
+        --query Location \
+        --output text
+else
+    aws s3api create-bucket \
+        --bucket "$bucket" \
+        --region "$region" \
+        --create-bucket-configuration LocationConstraint="$region" \
+        --query Location \
+        --output text
+fi
