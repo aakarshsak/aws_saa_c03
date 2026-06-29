@@ -1,1 +1,42 @@
 #!/usr/bin/env bash
+
+# Generate random files and upload the last one to an S3 bucket.
+# Usage: ./put-object <required: s3-bucket> [num_of_files]
+
+set -e
+
+# Check that the bucket name is provided.
+if [ $# -lt 1 ]; then
+    echo "Error: bucket name is required"
+    exit 1
+fi
+
+bucket=$1
+NUM_FILES=${2:-10}
+OUTPUT_DIR="/tmp/random-files"
+
+# Remove any existing output directory before generating new files.
+rm -rf "$OUTPUT_DIR"
+
+# Create the directory that will hold the generated files.
+mkdir -p "$OUTPUT_DIR"
+
+# Generate the requested number of random files.
+for ((i=1; i<=NUM_FILES; i++)); do
+    FILE_NAME="file_${i}.txt"
+    FILE_PATH="$OUTPUT_DIR/$FILE_NAME"
+
+    # Create a random-sized file between 1 KB and 100 KB.
+    SIZE_KB=$((RANDOM % 100 + 1))
+
+    head -c "${SIZE_KB}K" /dev/urandom > "$FILE_PATH"
+
+    echo "Created: $FILE_PATH (${SIZE_KB}KB)"
+done
+
+echo "Done! Generated $NUM_FILES files in $OUTPUT_DIR"
+
+tree "$OUTPUT_DIR"
+
+# Upload the final generated file to the specified S3 bucket.
+aws s3 sync /tmp/random-files "s3://$bucket/dumps/"

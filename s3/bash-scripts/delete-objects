@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+if [ -z "$1" ]; then
+    echo "Error: no input provided" >&2
+    exit 1
+fi
+
+bucket=$1
+
+aws s3api list-objects \
+    --bucket $bucket \
+    --query '{Objects: Contents[].{Key: Key}}' > s3/object_list.json
+
+aws s3api delete-objects --bucket $bucket --delete file://object_list.json
